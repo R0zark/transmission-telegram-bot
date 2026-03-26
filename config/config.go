@@ -15,21 +15,10 @@ type Transmission struct {
 	Password string `yaml:"password"`
 }
 
-type Solarman struct {
-	AppId     string `yaml:"appId"`
-	AppSecret string `yaml:"appSecret"`
-	Email     string `yaml:"email"`
-	Password  string `yaml:"password"`
-}
-
-type API struct {
-	AuthURL string `yaml:"authURL"`
-	ApiURL  string `yaml:"apiURL"`
-}
-
 type Telegram struct {
-	BotToken string `yaml:"botToken"`
-	ChatID   string `yaml:"chatID"`
+	BotToken  string   `yaml:"botToken"`
+	ChatID    string   `yaml:"chatID"`
+	Whitelist []string `yaml:"whitelist"`
 }
 
 type Device struct {

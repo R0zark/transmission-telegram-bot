@@ -51,8 +51,7 @@ transmission:
 telegram:
     botToken: "YOUR_TELEGRAM_BOT_TOKEN"
     chatID: "YOUR_TELEGRAM_CHATID"
-device:
-    deviceSn: "YOUR_DEVICE_SN"
+    whitelist: ["ID2", "ID1"] #Add your allowed user id here
 ```
 
 ## Usage
