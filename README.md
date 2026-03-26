@@ -1,8 +1,8 @@
 # Telegram Bot for Transmission Daemon
 
 This Telegram bot was designed to interact with a Transmission daemon for initiating downloads using either torrent files or magnet links.
-I reforked the original repository because the creator added unnecessary stuff that didn’t align with the bot’s original goal. goal.
-I will add new features that are related to the original purpose of the bot.
+
+I reforked the original repository because the creator added unnecessary stuff that didn’t align with the bot’s original goal. goal. I will add new features that are related to the original purpose of the bot.
 ## Features
 
 - Accepted commands:
@@ -72,4 +72,4 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## Contact or Support
 
-For any inquiries or support, please contact [Manuel Mendoza](mailto:manumb@gmail.com).
+For any inquiries or support, please create a new issue.
