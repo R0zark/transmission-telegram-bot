@@ -3,10 +3,9 @@ package main
 import (
 	"log"
 
-	"github.com/Coolknight/transmission-telegram-bot/bot"
-	"github.com/Coolknight/transmission-telegram-bot/config"
-	"github.com/Coolknight/transmission-telegram-bot/solarman"
-	"github.com/Coolknight/transmission-telegram-bot/transmission"
+	"github.com/R0zark/transmission-telegram-bot/bot"
+	"github.com/R0zark/transmission-telegram-bot/config"
+	"github.com/R0zark/transmission-telegram-bot/transmission"
 )
 
 func main() {
@@ -28,15 +27,10 @@ func main() {
 
 	// Initialize the Telegram bot
 	log.Println("Initialize Telegram Bot")
-	telegramBot, err := bot.NewBot(cfg.Telegram.BotToken)
+	telegramBot, err := bot.NewBot(cfg)
 	if err != nil {
 		log.Fatal("Error initializing Telegram bot:", err)
 	}
-
-	// Initialize solarman alerts daemon
-	log.Println("Launch Solarman alert daemon")
-	go solarman.ApiAlert(cfg)
-
 	// Handle incoming messages and commands for the bot
 	telegramBot.Start(transmissionClient)
 

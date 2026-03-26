@@ -7,29 +7,29 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
-	"strconv"
 	"strings"
 	"time"
 
-	"github.com/Coolknight/transmission-telegram-bot/dockerhandler"
-	"github.com/Coolknight/transmission-telegram-bot/screentime"
-	"github.com/Coolknight/transmission-telegram-bot/transmission"
-	"github.com/Coolknight/transmission-telegram-bot/yamlhandler"
+	"github.com/R0zark/transmission-telegram-bot/config"
+	"github.com/R0zark/transmission-telegram-bot/dockerhandler"
+	"github.com/R0zark/transmission-telegram-bot/transmission"
+	"github.com/R0zark/transmission-telegram-bot/yamlhandler"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
 // Bot struct holds the Telegram bot
 type Bot struct {
 	BotAPI *tgbotapi.BotAPI
+	Config config.Config
 }
 
 // NewBot initializes a new Telegram bot
-func NewBot(token string) (*Bot, error) {
-	botAPI, err := tgbotapi.NewBotAPI(token)
+func NewBot(config *config.Config) (*Bot, error) {
+	botAPI, err := tgbotapi.NewBotAPI(config.Telegram.BotToken)
 	if err != nil {
 		return nil, err
 	}
-	return &Bot{BotAPI: botAPI}, nil
+	return &Bot{BotAPI: botAPI, Config: *config}, nil
 }
 
 // Start updates handler for the bot
@@ -67,8 +67,6 @@ func (b *Bot) Start(transmission *transmission.Client) {
 				b.HandleMagnetLink(updates, update.Message.Chat.ID, transmission)
 			case "/rss":
 				b.HandleRSSAdition(updates, update.Message.Chat.ID)
-			case "/screen":
-				b.HandleScreentime(update)
 			case "/scan":
 				b.HandleScanner(update)
 			case "/help":
@@ -302,70 +300,6 @@ func (b *Bot) HandleRSSAdition(updates <-chan tgbotapi.Update, chatID int64) {
 	b.BotAPI.Send(msg)
 }
 
-// HandleScreentime handles /screen command
-func (b *Bot) HandleScreentime(update tgbotapi.Update) {
-	// Possible commands are:
-	// /screen <kidname> start
-	// /screen <kidname> add <minutes> <description>
-	// /screen <kidname> take <minutes> <description>
-	// /screen <kidname> log
-
-	// Split the command into words
-	words := strings.Fields(update.Message.Text)
-
-	// Ensure the kid name is always the same using lower case.
-	kidName := strings.ToLower(words[1])
-	command := words[2]
-
-	var msg tgbotapi.MessageConfig
-
-	switch command {
-	case "start":
-		// Initialize screentime for the specified kid
-		screentime.Initialize(kidName)
-		msg = tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("%s Initialized", kidName))
-
-	case "log":
-		// Retrieve accountability info for the kid and send it to the user
-		accountability, err := screentime.GetAccountability(kidName)
-		if err != nil {
-			log.Printf("error getting accountability: %v", err)
-			return
-		}
-
-		msg = tgbotapi.NewMessage(update.Message.Chat.ID, accountability)
-
-	case "add":
-		minutes, err := strconv.Atoi(words[3])
-		if err != nil {
-			log.Printf("converting minutes to int: %v", err)
-			return
-		}
-		// The words from fourth to the last one form the description
-		description := strings.Join(words[4:], " ")
-		// Add minutes to the kid's screentime with provided description
-		screentime.AddMinutes(kidName, description, minutes)
-		msg = tgbotapi.NewMessage(update.Message.Chat.ID, "Added")
-
-	case "take":
-		minutes, err := strconv.Atoi(words[3])
-		if err != nil {
-			return
-		}
-		// Join the remaining words to form the description
-		description := strings.Join(words[4:], " ")
-		// Subtract minutes from the kid's screentime with provided description
-		screentime.SubtractMinutes(kidName, description, minutes)
-		msg = tgbotapi.NewMessage(update.Message.Chat.ID, "Taken")
-
-	default:
-		// Log unknown subcommands and do nothing
-		log.Printf("unknown subcommand %s, aborting", command)
-	}
-
-	b.BotAPI.Send(msg)
-}
-
 // HandleScanner handles /scan command
 func (b *Bot) HandleScanner(update tgbotapi.Update) {
 	fileName := "/tmp/scanned_image.jpg"
@@ -406,7 +340,6 @@ func (b *Bot) HandleHelpCommand(update tgbotapi.Update) {
 		"/torrent - Upload a torrent file\n" +
 		"/magnet - Input a magnet link\n" +
 		"/rss - Input a rss feed into transmission-rss" +
-		"/screen - Screentime management for kids" +
 		"/help - Show available commands"
 
 	// Send the help message to the user

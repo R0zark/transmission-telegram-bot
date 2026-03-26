@@ -1,7 +1,7 @@
 package transmission
 
 import (
-	"github.com/Coolknight/transmission-telegram-bot/config"
+	"github.com/R0zark/transmission-telegram-bot/config"
 	"github.com/hekmon/transmissionrpc"
 )
 

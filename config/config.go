@@ -37,8 +37,6 @@ type Device struct {
 }
 type Config struct {
 	Transmission Transmission `yaml:"transmission"`
-	Solarman     Solarman     `yaml:"solarman"`
-	API          API          `yaml:"api"`
 	Telegram     Telegram     `yaml:"telegram"`
 	Device       Device       `yaml:"device"`
 }

@@ -25,3 +25,5 @@ torrents
 
 # Editor
 .vscode
+
+config/config.yaml

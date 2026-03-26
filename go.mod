@@ -1,6 +1,6 @@
-module github.com/Coolknight/transmission-telegram-bot
+module github.com/R0zark/transmission-telegram-bot
 
-go 1.21.4
+go 1.26.1
 
 require (
 	github.com/docker/docker v24.0.7+incompatible
