@@ -8,11 +8,12 @@ import (
 
 // Config struct to hold bot and Transmission configuration
 type Transmission struct {
-	URL      string `yaml:"url"`
-	Port     uint16 `yaml:"port"`
-	HTTPS    bool   `yaml:"https"`
-	User     string `yaml:"user"`
-	Password string `yaml:"password"`
+	URL             string `yaml:"url"`
+	Port            uint16 `yaml:"port"`
+	HTTPS           bool   `yaml:"https"`
+	User            string `yaml:"user"`
+	Password        string `yaml:"password"`
+	DefaultLocation string `yaml:"defaultLocation"`
 }
 
 type Solarman struct {
@@ -37,8 +38,6 @@ type Device struct {
 }
 type Config struct {
 	Transmission Transmission `yaml:"transmission"`
-	Solarman     Solarman     `yaml:"solarman"`
-	API          API          `yaml:"api"`
 	Telegram     Telegram     `yaml:"telegram"`
 	Device       Device       `yaml:"device"`
 }
