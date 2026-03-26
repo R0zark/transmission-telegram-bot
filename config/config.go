@@ -8,12 +8,11 @@ import (
 
 // Config struct to hold bot and Transmission configuration
 type Transmission struct {
-	URL             string `yaml:"url"`
-	Port            uint16 `yaml:"port"`
-	HTTPS           bool   `yaml:"https"`
-	User            string `yaml:"user"`
-	Password        string `yaml:"password"`
-	DefaultLocation string `yaml:"defaultLocation"`
+	URL      string `yaml:"url"`
+	Port     uint16 `yaml:"port"`
+	HTTPS    bool   `yaml:"https"`
+	User     string `yaml:"user"`
+	Password string `yaml:"password"`
 }
 
 type Solarman struct {
