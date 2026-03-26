@@ -72,4 +72,4 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## Contact or Support
 
-For any inquiries or support, please contact [Manuel Mendoza](mailto:manumb@gmail.com).
+For any inquiries or support, please contact create a issue.
