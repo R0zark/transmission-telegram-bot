@@ -6,7 +6,8 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"os/exec"
+	"slices"
+	"strconv"
 	"strings"
 	"time"
 
@@ -50,7 +51,8 @@ func (b *Bot) Start(transmission *transmission.Client) {
 	log.Println("Bot ready.")
 
 	for update := range updates {
-		if update.Message == nil {
+		if update.Message == nil || !b.CheckWhiteList(strconv.Itoa(update.Message.From.ID)) {
+			log.Printf("The id %d is not in the whitelist", update.Message.From.ID)
 			continue
 		}
 
@@ -67,8 +69,6 @@ func (b *Bot) Start(transmission *transmission.Client) {
 				b.HandleMagnetLink(updates, update.Message.Chat.ID, transmission)
 			case "/rss":
 				b.HandleRSSAdition(updates, update.Message.Chat.ID)
-			case "/scan":
-				b.HandleScanner(update)
 			case "/help":
 				b.HandleHelpCommand(update)
 			default:
@@ -300,36 +300,6 @@ func (b *Bot) HandleRSSAdition(updates <-chan tgbotapi.Update, chatID int64) {
 	b.BotAPI.Send(msg)
 }
 
-// HandleScanner handles /scan command
-func (b *Bot) HandleScanner(update tgbotapi.Update) {
-	fileName := "/tmp/scanned_image.jpg"
-	cmd := exec.Command("scanimage", "--format=jpeg", "--resolution=300", fmt.Sprintf("--output-file=%s", fileName))
-	_, err := cmd.Output()
-
-	if err != nil {
-		log.Printf("Failed to scan image: %v", err)
-		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Failed to scan image. Check the logs")
-		b.BotAPI.Send(msg)
-		return
-	}
-
-	// Create a new photo upload message with the image file
-	photo := tgbotapi.NewPhotoUpload(update.Message.Chat.ID, fileName)
-
-	// Send the photo as a response
-	_, err = b.BotAPI.Send(photo)
-	if err != nil {
-		log.Printf("Failed to send scanned image: %v", err)
-	}
-
-	// Remove the temporary image file
-	err = os.Remove(fileName)
-	if err != nil {
-		log.Printf("Failed to remove temporary image file: %v", err)
-	}
-	log.Printf("Image scanned and sent\n")
-}
-
 // HandleHelpCommand handles the /help command
 func (b *Bot) HandleHelpCommand(update tgbotapi.Update) {
 	// Get the chat ID
@@ -361,5 +331,13 @@ func (b *Bot) HandleDefault(update tgbotapi.Update) {
 	_, err := b.BotAPI.Send(msg)
 	if err != nil {
 		log.Println("Error sending default message:", err)
+	}
+}
+func (b *Bot) CheckWhiteList(id string) bool {
+	if slices.Contains(b.Config.Telegram.Whitelist, id) {
+		return true
+
+	} else {
+		return false
 	}
 }
