@@ -162,6 +162,8 @@ func handleDownload(b *Bot, updates <-chan tgbotapi.Update, chatID int64, transm
 	torrentID, err := transmission.StartDownload(fileLink, downloadPath)
 	if err != nil {
 		log.Println("Error starting download:", err)
+		startMsg := tgbotapi.NewMessage(chatID, "There is a error in the torrent/magnet")
+		b.BotAPI.Send(startMsg)
 		return
 	}
 

@@ -1,6 +1,10 @@
 package transmission
 
 import (
+	"fmt"
+	"os"
+	"strings"
+
 	"github.com/R0zark/transmission-telegram-bot/config"
 	"github.com/hekmon/transmissionrpc"
 )
@@ -27,14 +31,30 @@ func NewClient(config config.Transmission) (*Client, error) {
 
 // StartDownload starts a download using the Transmission client
 func (c *Client) StartDownload(magnetLink, downloadPath string) (int64, error) {
-	response, err := c.Client.TorrentAddFileDownloadDir(magnetLink, downloadPath)
-	if err != nil {
-		return 0, err
-	}
 
-	// Extract and return the torrent ID
-	torrentID := response.ID // Assuming only one torrent is added
-	return *torrentID, nil
+	var torrentId *int64
+
+	if c.ChecksMagnetURL(magnetLink) {
+		response, err := c.Client.TorrentAdd(&transmissionrpc.TorrentAddPayload{Filename: &magnetLink})
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			return 0, err
+		} else {
+			// Only 3 fields will be returned/set in the Torrent struct
+			fmt.Println("Added: " + *response.Name)
+			torrentId = response.ID
+			return *torrentId, nil
+		}
+
+	} else {
+		response, err := c.Client.TorrentAddFileDownloadDir(magnetLink, downloadPath)
+		if err != nil {
+			return 0, err
+		}
+		fmt.Println("Added: " + *response.Name)
+		torrentId = response.ID // Assuming only one torrent is added
+		return *torrentId, nil
+	}
 }
 
 // IsDownloadComplete checks if the specified torrent download is complete
@@ -66,4 +86,14 @@ func (c *Client) GetName(torrentID int64) (string, error) {
 	name := torrents[0].Name
 
 	return *name, nil // Handle the case when no torrents or multiple torrents are returned
+}
+
+// ChecksMagnetURL checks if the specified torrent URL is a magnet
+func (c *Client) ChecksMagnetURL(torrentURL string) bool {
+
+	if strings.Split(torrentURL, ":")[0] == "magnet" {
+		return true
+	} else {
+		return false
+	}
 }
