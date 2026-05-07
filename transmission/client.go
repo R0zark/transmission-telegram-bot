@@ -35,7 +35,7 @@ func (c *Client) StartDownload(magnetLink, downloadPath string) (int64, error) {
 	var torrentId *int64
 
 	if c.ChecksMagnetURL(magnetLink) {
-		response, err := c.Client.TorrentAdd(&transmissionrpc.TorrentAddPayload{Filename: &magnetLink})
+		response, err := c.Client.TorrentAdd(&transmissionrpc.TorrentAddPayload{Filename: &magnetLink, DownloadDir: &downloadPath})
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			return 0, err
